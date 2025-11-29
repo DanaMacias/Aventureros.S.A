@@ -1,0 +1,166 @@
+CREATE TABLE administrador (
+  id INT NOT NULL,
+  nombre VARCHAR(100) NOT NULL,
+  correo VARCHAR(100) NOT NULL UNIQUE,
+  clave VARCHAR(255) NOT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE nacionalidad (
+    id INT AUTO_INCREMENT NOT NULL,
+    nacionalidad VARCHAR(45) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+
+CREATE TABLE genero (
+    id INT AUTO_INCREMENT NOT NULL,
+    genero VARCHAR(45) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+
+CREATE TABLE cliente (
+    identificacion INT NOT NULL,
+    nombre VARCHAR(45) NOT NULL,
+    direccion VARCHAR(100),
+    correo VARCHAR(100) NOT NULL UNIQUE,
+    clave VARCHAR(255) NOT NULL,
+    id_genero INT NOT NULL,
+    id_nacionalidad INT NOT NULL,
+    PRIMARY KEY (identificacion),
+    FOREIGN KEY (id_genero) REFERENCES genero(id),
+    FOREIGN KEY (id_nacionalidad) REFERENCES nacionalidad(id)
+);
+
+CREATE TABLE telefono_cliente (
+    identificacion_cliente INT NOT NULL,
+    numero VARCHAR(20) NOT NULL,
+    PRIMARY KEY (identificacion_cliente, numero),
+    FOREIGN KEY (identificacion_cliente) REFERENCES cliente(identificacion)
+);
+
+CREATE TABLE conductor (
+    identificacion INT NOT NULL,
+    nombre VARCHAR(45) NOT NULL,
+    correo VARCHAR(100) NOT NULL UNIQUE,
+    clave VARCHAR(255) NOT NULL,
+    direccion VARCHAR(100) NOT NULL,
+    foto VARCHAR(200) NOT NULL,
+    id_nacionalidad INT NOT NULL,
+    id_genero INT NOT NULL,
+    PRIMARY KEY (identificacion),
+    FOREIGN KEY (id_nacionalidad) REFERENCES nacionalidad(id),
+    FOREIGN KEY (id_genero) REFERENCES genero(id)
+);
+
+CREATE TABLE telefono_conductor (
+    identificacion_conductor INT NOT NULL,
+    numero VARCHAR(20) NOT NULL,
+    PRIMARY KEY (identificacion_conductor, nombre),
+    FOREIGN KEY (identificacion_conductor) REFERENCES conductor(identificacion)
+);
+
+CREATE TABLE marca (
+    id INT AUTO_INCREMENT NOT NULL,
+    marca VARCHAR(45) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE modelo (
+    id INT AUTO_INCREMENT NOT NULL,
+    modelo VARCHAR(45) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE vehiculo (
+    placa VARCHAR(10) NOT NULL,
+    identificacion_conductor INT NOT NULL,
+    PRIMARY KEY (placa),
+    FOREIGN KEY (identificacion_conductor) REFERENCES conductor(identificacion)
+);
+
+CREATE TABLE marca_vehiculo (
+    placa_vehiculo VARCHAR(10) NOT NULL,
+    id_marca INT NOT NULL,
+    PRIMARY KEY (placa_vehiculo, id_marca),
+    FOREIGN KEY (placa_vehiculo) REFERENCES vehiculo(placa),
+    FOREIGN KEY (id_marca) REFERENCES marca(id)
+);
+
+CREATE TABLE modelo_vehiculo (
+    placa_vehiculo VARCHAR(10) NOT NULL,
+    id_modelo INT NOT NULL,
+    PRIMARY KEY (placa_vehiculo, id_modelo),
+    FOREIGN KEY (placa_vehiculo) REFERENCES vehiculo(placa),
+    FOREIGN KEY (id_modelo) REFERENCES modelo(id)
+);
+
+CREATE TABLE tipo_servicio (
+    id INT AUTO_INCREMENT NOT NULL,
+    tipo_servicio VARCHAR(45) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE tipo_servicio_vehiculo (
+    placa_vehiculo VARCHAR(10) NOT NULL,
+    id_tipo_servicio INT NOT NULL,
+    PRIMARY KEY (placa_vehiculo, id_tipo_servicio),
+    FOREIGN KEY (placa_vehiculo) REFERENCES vehiculo(placa),
+    FOREIGN KEY (id_tipo_servicio) REFERENCES tipo_servicio(id)
+);
+
+CREATE TABLE categoria (
+    id INT AUTO_INCREMENT NOT NULL,
+    categoria VARCHAR(45) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE servicio (
+    identificacion_servicio INT AUTO_INCREMENT NOT NULL,
+    identificacion_cliente INT NOT NULL,
+    identificacion_conductor INT NOT NULL,
+    direccion_origen VARCHAR(100) NOT NULL,
+    direccion_destino VARCHAR(100) NOT NULL,
+    id_categoria INT NOT NULL,
+    PRIMARY KEY (identificacion_servicio),
+    FOREIGN KEY (identificacion_cliente) REFERENCES cliente(identificacion),
+    FOREIGN KEY (identificacion_conductor) REFERENCES conductor(identificacion),
+    FOREIGN KEY (id_categoria) REFERENCES categoria(id)
+);
+
+CREATE TABLE forma_pago (
+    id_pago INT AUTO_INCREMENT NOT NULL,
+    identificacion_servicio INT NOT NULL,
+    fecha_pago DATE NOT NULL,
+    valor_pago DECIMAL(10,2) NOT NULL,
+    PRIMARY KEY (id_pago, identificacion_servicio),
+    FOREIGN KEY (identificacion_servicio) REFERENCES servicio(identificacion_servicio)
+);
+
+CREATE TABLE categoria_pago (
+    id INT AUTO_INCREMENT NOT NULL,
+    categoria_pago VARCHAR(45) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE categoria_forma_pago (
+    id_categoria_pago INT NOT NULL,
+    id_pago INT NOT NULL,
+    identificacion_servicio INT NOT NULL,
+    nombre VARCHAR(45) NOT NULL,
+    direccion VARCHAR(100) NOT NULL,
+    PRIMARY KEY (id_categoria_pago, id_pago, identificacion_servicio),
+    FOREIGN KEY (id_categoria_pago) REFERENCES categoria_pago(id),
+    FOREIGN KEY (id_pago) REFERENCES forma_pago(id_pago),
+    FOREIGN KEY (identificacion_servicio) REFERENCES servicio(identificacion_servicio)
+);
+
+----ALTER TABLE QUE HICIMOS----
+ALTER TABLE telefono_conductor 
+CHANGE COLUMN nombre numero VARCHAR(20);
+
+
+
+
+

@@ -1,0 +1,18 @@
+INSERT INTO administrador (id, nombre, correo, clave) VALUES
+(1014738649, 'Carlos López', 'admin1@aventureros.com', 'admin123'),
+(2014738649, 'María Gómez', 'admin2@aventureros.com', 'admin456'),
+(3014738649, 'Juan Pérez', 'admin3@aventureros.com', 'admin789');
+
+INSERT INTO genero(genero) VALUES ('Masculino'), ('Femenino');
+
+INSERT INTO nacionalidad(nacionalidad) VALUES ('Colombia'), ('México'), ('Perú');
+
+INSERT INTO cliente (identificacion, nombre, direccion, correo, clave, id_genero, id_nacionalidad) VALUES
+(1001, 'Ana Torres', 'Cra 10 #25-15', 'ana.torres@gmail.com', 'clave1', 2, 1),
+(1002, 'Luis Martínez', 'Cll 45 #12-08', 'luis.martinez@gmail.com', 'clave2', 1, 2),
+(1003, 'Sofía Herrera', 'Av. Central 50', 'sofia.herrera@gmail.com', 'clave3', 2, 3);
+
+INSERT INTO conductor (identificacion, nombre, correo, clave, direccion, foto, id_nacionalidad, id_genero) VALUES
+(2001, 'Pedro Castillo', 'pedro.castillo@gmail.com', 'abcd1234', 'Cra 40 #15-22', 'img/pedro.jpg', 1, 1),
+(2002, 'Camila Ruíz', 'camila.ruiz@gmail.com', 'pass987', 'Cll 90 #21-30', 'img/camila.jpg', 2, 2),
+(2003, 'Daniel Pardo', 'daniel.pardo@gmail.com', 'xyz456', 'Av. Norte 100', 'img/daniel.jpg', 3, 1);
