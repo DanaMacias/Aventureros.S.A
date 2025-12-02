@@ -24,6 +24,7 @@
         <h1>Conductor</h1>
         <%@ include file="menuConductor.jsp" %>
         <p><strong>Identificación:</strong> ${conductor.identificacion}</p>
+        <a href="Controlador?accion=editarCuenta">Administrar Cuenta</a>
 
     </body>
 </html>
