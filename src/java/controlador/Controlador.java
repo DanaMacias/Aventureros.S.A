@@ -177,6 +177,81 @@ public class Controlador extends HttpServlet {
                 request.getRequestDispatcher("Registrar.jsp").forward(request, response);
             }
         }
+        
+        // ----------------------------------------------------------------------
+        // ABRIR FORMULARIO EDITAR CUENTA ADMIN
+        // ----------------------------------------------------------------------
+        else if (accion.equals("editarCuentaAdmin")) {
+
+            Administrador admin = (Administrador) request.getSession().getAttribute("admin");
+
+            if (admin == null) {
+                response.sendRedirect("index.jsp");
+                return;
+            }
+
+            request.setAttribute("admin", admin);
+            request.getRequestDispatcher("editarCuentaAdmin.jsp").forward(request, response);
+        } else if (accion.equals("actualizarAdmin")) {
+
+            Administrador admin = (Administrador) request.getSession().getAttribute("admin");
+
+            if (admin == null) {
+                response.sendRedirect("index.jsp");
+                return;
+            }
+
+            // Recibir datos del formulario
+            String nuevoNombre = request.getParameter("nombre");
+            String nuevoCorreo = request.getParameter("correo");
+            String nuevaClave = request.getParameter("clave");
+            String confirmarClave = request.getParameter("clave2");
+
+            // Validaciones básicas
+            if (nuevoNombre == null || nuevoNombre.trim().isEmpty()) {
+                request.setAttribute("errorMessage", "El nombre no puede estar vacío.");
+                request.getRequestDispatcher("editarCuentaAdmin.jsp").forward(request, response);
+                return;
+            }
+
+            if (nuevoCorreo == null || nuevoCorreo.trim().isEmpty()) {
+                request.setAttribute("errorMessage", "El correo no puede estar vacío.");
+                request.getRequestDispatcher("editarCuentaAdmin.jsp").forward(request, response);
+                return;
+            }
+
+            // Actualizar clave solo si el usuario la escribe
+            if (nuevaClave != null && !nuevaClave.trim().isEmpty()) {
+
+                if (!nuevaClave.equals(confirmarClave)) {
+                    request.setAttribute("errorMessage", "Las contraseñas no coinciden.");
+                    request.getRequestDispatcher("editarCuentaAdmin.jsp").forward(request, response);
+                    return;
+                }
+
+                admin.setClave(nuevaClave);
+            }
+
+            // Actualizar nombre y correo
+            admin.setNombre(nuevoNombre);
+            admin.setCorreo(nuevoCorreo);
+
+            administradorDAO dao = new administradorDAO();
+            boolean actualizado = dao.actualizarAdministrador(admin);
+
+            if (actualizado) {
+                request.setAttribute("successMessage", "Datos actualizados correctamente.");
+            } else {
+                request.setAttribute("errorMessage", "Error al actualizar.");
+            }
+
+            // Refrescar sesión
+            request.getSession().setAttribute("admin", admin);
+
+            request.getRequestDispatcher("editarCuentaAdmin.jsp").forward(request, response);
+        }
+
+
 
         // ----------------------------------------------------------------------
         // ABRIR FORMULARIO ADMINISTRAR CUENTA
@@ -268,3 +343,6 @@ public class Controlador extends HttpServlet {
             throws ServletException, IOException { processRequest(request, response); }
 
 }
+
+
+

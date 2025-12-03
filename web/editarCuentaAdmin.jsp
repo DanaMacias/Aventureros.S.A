@@ -5,14 +5,25 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<%
+    // Validar que el admin está en sesión
+    negocio.Administrador admin = (negocio.Administrador) session.getAttribute("admin");
+    if (admin == null) {
+        response.sendRedirect("index.jsp");
+        return;
+    }
+
+    String errorMessage = (String) request.getAttribute("errorMessage");
+    String successMessage = (String) request.getAttribute("successMessage");
+%>
+
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8">
         <title>Editar Cuenta Administrador</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="styles/estilos.css">
     </head>
     <body>
 
@@ -21,31 +32,30 @@
         <div class="container mt-4" style="max-width: 500px;">
             <h3>Editar Cuenta</h3>
 
-            <c:if test="${not empty errorMessage}">
+            <% if (errorMessage != null) { %>
                 <div class="alert alert-danger mt-3">
-                    ${errorMessage}
+                    <%= errorMessage %>
                 </div>
-            </c:if>
+            <% } %>
 
-            <c:if test="${not empty successMessage}">
+            <% if (successMessage != null) { %>
                 <div class="alert alert-success mt-3">
-                    ${successMessage}
+                    <%= successMessage %>
                 </div>
-            </c:if>
+            <% } %>
 
-            
-            <form action="EditarCuentaAdmin" method="POST">
+            <form action="Controlador?accion=actualizarAdmin" method="POST">
 
                 <div class="mb-3">
                     <label class="form-label">Nombre</label>
                     <input type="text" name="nombre" class="form-control" 
-                           value="${admin.nombre}">
+                           value="<%= admin.getNombre() %>">
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Correo</label>
                     <input type="email" name="correo" class="form-control"
-                           value="${admin.correo}" >
+                           value="<%= admin.getCorreo() %>">
                 </div>
 
                 <div class="mb-3">
@@ -58,7 +68,10 @@
                     <input type="password" name="clave2" class="form-control">
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100">Guardar cambios</button>
+                <button type="submit" name="accion" value="actualizarAdmin" class="btn btn-primary">
+                    Guardar cambios
+                </button>
+
 
             </form>
         </div>
