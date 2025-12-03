@@ -3,8 +3,8 @@ package persistencia;
 import negocio.Cliente;
 import negocio.Genero;
 import negocio.Nacionalidad;
-import negocio.TelefonoCliente; // Añadido
-import negocio.Servicio; // Añadido
+import negocio.TelefonoCliente; 
+import negocio.Servicio; 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,17 +13,11 @@ import java.util.ArrayList;
 import java.sql.SQLException;
 
 public class clienteDAO {
-    // Declaramos la conexión solo para inicializar la clase de conexión,
-    // pero manejaremos la variable Connection localmente dentro de los métodos.
     conexion con = new conexion();
     
-    // 🔑 Instancias de DAOs para acceder a los datos relacionados
     private telefonoClienteDAO telClienteDao = new telefonoClienteDAO();
     private servicioDAO servicioDao = new servicioDAO();
     
-    // ----------------------------------------------------------------------
-    // VALIDAR LOGIN
-    // ----------------------------------------------------------------------
     public int validarLogin(String correo, String clave, Cliente cliente) {
         Connection accesoConexion = null;
         PreparedStatement ps = null;
@@ -61,9 +55,6 @@ public class clienteDAO {
         return count;
     }
     
-    // ----------------------------------------------------------------------
-    // REGISTRAR CLIENTE
-    // ----------------------------------------------------------------------
     public boolean registrarCliente(Cliente c) {
         Connection acceso = null;
         PreparedStatement ps = null;
@@ -99,16 +90,13 @@ public class clienteDAO {
         }
     }
     
-    // ----------------------------------------------------------------------
-    // OBTENER CLIENTE POR ID (USADO PARA HISTORIAL)
-    // ----------------------------------------------------------------------
     public Cliente obtenerClientePorId(int identificacion) {
         Cliente cliente = null;
         Connection accesoConexion = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        // La consulta trae los datos del cliente, género y nacionalidad
+        
         String sql = "SELECT c.identificacion, c.nombre, c.direccion, c.correo, c.clave, "
                  + "g.id AS id_genero, g.genero AS genero_desc, " 
                  + "n.id AS id_nacionalidad, n.nacionalidad AS nacionalidad_pais " 
@@ -126,27 +114,26 @@ public class clienteDAO {
 
             if (rs.next()) {
                 cliente = new Cliente();
-                int idCliente = rs.getInt("identificacion"); // Captura la identificación
+                int idCliente = rs.getInt("identificacion"); 
                 
                 cliente.setIdentificacion(idCliente);
                 cliente.setNombre(rs.getString("nombre"));
                 cliente.setDireccion(rs.getString("direccion"));
                 cliente.setCorreo(rs.getString("correo"));
-                cliente.setClave(rs.getString("clave")); // Aunque no se muestre, se mapea
-
-                // Mapear Genero
+                cliente.setClave(rs.getString("clave"));
+                
                 Genero g = new Genero();
                 g.setId(rs.getInt("id_genero"));
                 g.setGenero(rs.getString("genero_desc")); 
                 cliente.setGenero(g);
 
-                // Mapear Nacionalidad
+                
                 Nacionalidad n = new Nacionalidad();
                 n.setId(rs.getInt("id_nacionalidad"));
                 n.setNacionalidad(rs.getString("nacionalidad_pais")); 
                 cliente.setNacionalidad(n);
                 
-                // 🔑 Añadir teléfonos y servicios
+                
                 cliente.setTelefonos(telClienteDao.obtenerTelefonosPorCliente(idCliente));
                 cliente.setServicios(servicioDao.obtenerServiciosPorCliente(idCliente));
             }
@@ -164,15 +151,11 @@ public class clienteDAO {
         return cliente;
     }
     
-    // ----------------------------------------------------------------------
-    // LISTAR TODOS LOS CLIENTES (USADO POR ADMIN)
-    // ----------------------------------------------------------------------
     public List<Cliente> listarClientes() {
         Connection accesoConexion = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        // Utilizamos la misma consulta que obtenerClientePorId, sin el filtro WHERE
         String sql = "SELECT c.identificacion, c.nombre, c.direccion, c.correo, c.clave, " +
                      "g.id AS id_genero, g.genero AS genero_desc, " + 
                      "n.id AS id_nacionalidad, n.nacionalidad AS nacionalidad_pais " + 
@@ -189,33 +172,33 @@ public class clienteDAO {
 
             while (rs.next()) {
                 Cliente c = new Cliente();
-                // 1. Obtener la identificación del cliente
+                
                 int identificacionCliente = rs.getInt("identificacion"); 
                 
-                // 2. Mapear datos del Cliente
+                
                 c.setIdentificacion(identificacionCliente);
                 c.setNombre(rs.getString("nombre"));
                 c.setDireccion(rs.getString("direccion"));
                 c.setCorreo(rs.getString("correo"));
                 c.setClave(rs.getString("clave")); 
                 
-                // Mapear Genero
+                
                 Genero g = new Genero();
                 g.setId(rs.getInt("id_genero")); 
                 g.setGenero(rs.getString("genero_desc")); 
                 c.setGenero(g);
                 
-                // Mapear Nacionalidad
+                
                 Nacionalidad n = new Nacionalidad();
                 n.setId(rs.getInt("id_nacionalidad")); 
                 n.setNacionalidad(rs.getString("nacionalidad_pais")); 
                 c.setNacionalidad(n);
                 
-                // 3. 🔑 Obtener y establecer Teléfonos 
+                
                 List<TelefonoCliente> telefonos = telClienteDao.obtenerTelefonosPorCliente(identificacionCliente);
                 c.setTelefonos(telefonos); 
                 
-                // 4. 🔑 Obtener y establecer Servicios
+                
                 List<Servicio> servicios = servicioDao.obtenerServiciosPorCliente(identificacionCliente);
                 c.setServicios(servicios);
                 

@@ -21,7 +21,6 @@ public class telefonoClienteDAO {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        // Esta consulta busca un teléfono específico (aunque la tabla sugiere que el ID es el cliente)
         String sql = "SELECT identificacion_cliente, numero FROM telefono_cliente WHERE identificacion_cliente = ?";
 
         try {
@@ -77,7 +76,6 @@ public class telefonoClienteDAO {
       }
     }
     
-    // Método clave para obtener todos los teléfonos de un cliente
     public List<TelefonoCliente> obtenerTelefonosPorCliente(int identificacionCliente) {
         List<TelefonoCliente> telefonos = new ArrayList<>();
         Connection accesoConexion = null;

@@ -8,12 +8,8 @@ import negocio.Conductor;
 import negocio.TipoServicio; 
 
 public class servicioDAO {
-    // La instancia de conexión debe ser accesible
     conexion con = new conexion();
 
-    // =========================================================================
-    // Método implementado para el historial de clientes y para listarClientes
-    // =========================================================================
     public List<Servicio> obtenerServiciosPorCliente(int identificacionCliente) {
         List<Servicio> servicios = new ArrayList<>();
         Connection accesoConexion = null;
@@ -41,13 +37,11 @@ public class servicioDAO {
                 while (rs.next()) {
                     Servicio s = new Servicio();
                     
-                    // Mapeando las propiedades necesarias
                     s.setIdServicio(rs.getInt("identificacion_servicio"));
                     s.setDireccionOrigen(rs.getString("direccion_origen"));
                     s.setDireccionDestino(rs.getString("direccion_destino"));
                     s.setEstado(rs.getString("estado"));
                     
-                    // Asumiendo la existencia de estos setters en negocio.Servicio
                     s.setNombreConductor(rs.getString("nombre_conductor"));
                     s.setTipoServicioNombre(rs.getString("tipo_servicio_nombre"));
                     s.setValorPago(rs.getDouble("valor_pago"));
@@ -58,7 +52,6 @@ public class servicioDAO {
         } catch (SQLException e) {
             System.out.println("Error al obtener servicios de cliente: " + e.getMessage());
         } finally {
-            // Cierre de recursos para evitar fugas de conexión
             try {
                 if (rs != null) rs.close();
                 if (ps != null) ps.close();
@@ -69,11 +62,6 @@ public class servicioDAO {
         }
         return servicios;
     }
-
-
-    // =========================================================================
-    // MÉTODOS EXISTENTES (Mantenidos para el código completo)
-    // =========================================================================
 
     public List<Servicio> obtenerServiciosPendientes(int idConductor) {
         List<Servicio> lista = new ArrayList<>();
