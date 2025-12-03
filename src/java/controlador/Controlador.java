@@ -24,6 +24,7 @@ import persistencia.generoDAO;
 import persistencia.nacionalidadDAO;
 import persistencia.telefonoClienteDAO;
 import persistencia.telefonoConductorDAO;
+import persistencia.vehiculoDAO;
 
 @WebServlet(name = "Controlador", urlPatterns = {"/Controlador"})
 @MultipartConfig
@@ -249,6 +250,21 @@ public class Controlador extends HttpServlet {
             request.getSession().setAttribute("admin", admin);
 
             request.getRequestDispatcher("editarCuentaAdmin.jsp").forward(request, response);
+        }
+
+        // ----------------------------------------------------------------------
+        // ELIMINAR VEHICULO ADMIN
+        // ----------------------------------------------------------------------
+        
+        else if (accion.equals("eliminarVehiculo")) {
+
+            String placa = request.getParameter("placa");
+
+            vehiculoDAO dao = new vehiculoDAO();
+            boolean eliminado = dao.eliminarVehiculo(placa);
+
+            request.setAttribute("eliminado", eliminado);
+            request.getRequestDispatcher("eliminarVehiculoAdmin.jsp").forward(request, response);
         }
 
 
