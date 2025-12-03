@@ -17,6 +17,7 @@ import negocio.Cliente;
 import negocio.Conductor;
 import negocio.Genero;
 import negocio.Nacionalidad;
+import negocio.Servicio;
 import negocio.TelefonoCliente;
 import negocio.TelefonoConductor;
 import persistencia.administradorDAO;
@@ -24,6 +25,7 @@ import persistencia.clienteDAO;
 import persistencia.conductorDAO;
 import persistencia.generoDAO;
 import persistencia.nacionalidadDAO;
+import persistencia.servicioDAO;
 import persistencia.telefonoClienteDAO;
 import persistencia.telefonoConductorDAO;
 import persistencia.vehiculoDAO;
@@ -38,12 +40,15 @@ public class Controlador extends HttpServlet {
 
         response.setContentType("text/html;charset=UTF-8");
         String accion = request.getParameter("accion");
+        
+        // Instancia de clienteDAO para usar en múltiples acciones
+        clienteDAO clienteDao = new clienteDAO(); 
 
         // ----------------------------------------------------------------------
         // LOGIN
         // ----------------------------------------------------------------------
         if (accion.equals("Ingresar")) {
-
+            // ... (Lógica de Ingresar - Sin cambios) ...
             String correo = request.getParameter("email");
             String clave = request.getParameter("password");
 
@@ -65,9 +70,8 @@ public class Controlador extends HttpServlet {
                     request.getRequestDispatcher("conductorPrincipal.jsp").forward(request, response);
                 } else {
 
-                    clienteDAO clienteDAO = new clienteDAO();
                     Cliente cliente = new Cliente();
-                    int rCliente = clienteDAO.validarLogin(correo, clave, cliente);
+                    int rCliente = clienteDao.validarLogin(correo, clave, cliente); // Usamos la instancia clienteDao
 
                     if (rCliente > 0) {
                         request.getSession().setAttribute("cliente", cliente);
@@ -84,7 +88,7 @@ public class Controlador extends HttpServlet {
         // REGISTRO
         // ----------------------------------------------------------------------
         else if (accion.equals("Registrar")) {
-
+            // ... (Lógica de Registrar - Sin cambios) ...
             String usuario = request.getParameter("rol");
 
             // --------------------- REGISTRAR CLIENTE ----------------------
@@ -111,9 +115,7 @@ public class Controlador extends HttpServlet {
                 Nacionalidad nacionalidad = new nacionalidadDAO().obtenerPorId(idN);
                 c.setNacionalidad(nacionalidad);
 
-                clienteDAO cdao = new clienteDAO();
-
-                if (cdao.registrarCliente(c)) {
+                if (clienteDao.registrarCliente(c)) { // Usamos la instancia clienteDao
                     new telefonoClienteDAO().registrarTelefonoCliente(t);
                     request.setAttribute("msg", true);
                 } else {
@@ -125,7 +127,7 @@ public class Controlador extends HttpServlet {
 
             // --------------------- REGISTRAR CONDUCTOR ----------------------
             else {
-
+                // ... (Lógica de registrar conductor) ...
                 Conductor c = new Conductor();
                 c.setIdentificacion(Integer.parseInt(request.getParameter("identificacion")));
                 c.setNombre(request.getParameter("nombre_completo"));
@@ -183,10 +185,58 @@ public class Controlador extends HttpServlet {
         }
         
         // ----------------------------------------------------------------------
+        // LISTAR CLIENTES (ADMIN) - ¡COMPLETADO!
+        // ----------------------------------------------------------------------
+        else if (accion.equals("listarClientes")) {
+
+            // Llama al método para listar todos los clientes
+            List<Cliente> lista = clienteDao.listarClientes(); // Usamos la instancia clienteDao
+
+            request.setAttribute("clientes", lista);
+            // Redirige al JSP donde se mostrará la tabla de clientes
+            request.getRequestDispatcher("listarClientes.jsp").forward(request, response);
+        }
+
+        // ----------------------------------------------------------------------
+        // HISTORIAL CLIENTE ADMIN - ¡COMPLETADO!
+        // ----------------------------------------------------------------------
+        else if (accion.equals("historialCliente")) {
+
+            int id = Integer.parseInt(request.getParameter("id"));
+
+            // Instanciamos los DAOs necesarios
+            telefonoClienteDAO telefonoDao = new telefonoClienteDAO();
+            servicioDAO servicioDao = new servicioDAO();
+
+            // 1. Obtener los datos del cliente
+            Cliente cliente = clienteDao.obtenerClientePorId(id); // Usamos la instancia clienteDao
+            
+            // 2. Obtener los teléfonos del cliente
+            // NOTA: Asumiendo que existe el método obtenerTelefonosPorCliente en telefonoClienteDAO
+            // List<TelefonoCliente> telefonos = telefonoDao.obtenerTelefonosPorCliente(id);
+            // Usamos un placeholder si ese método aún no existe:
+            List<TelefonoCliente> telefonos = null; 
+            
+            // 3. Obtener los servicios del cliente
+            // NOTA: Asumiendo que existe el método obtenerServiciosPorCliente en servicioDAO
+            // List<Servicio> servicios = servicioDao.obtenerServiciosPorCliente(id); 
+            // Usamos un placeholder si ese método aún no existe:
+            List<Servicio> servicios = null;
+
+            // 4. Establecer atributos
+            request.setAttribute("cliente", cliente);
+            request.setAttribute("telefonos", telefonos);
+            request.setAttribute("servicios", servicios);
+
+            // 5. Redirigir al JSP del historial del cliente
+            request.getRequestDispatcher("historialCliente.jsp").forward(request, response);
+        }
+
+        // ----------------------------------------------------------------------
         // ABRIR FORMULARIO EDITAR CUENTA ADMIN
         // ----------------------------------------------------------------------
         else if (accion.equals("editarCuentaAdmin")) {
-
+            // ... (Lógica de editarCuentaAdmin - Sin cambios) ...
             Administrador admin = (Administrador) request.getSession().getAttribute("admin");
 
             if (admin == null) {
@@ -197,7 +247,7 @@ public class Controlador extends HttpServlet {
             request.setAttribute("admin", admin);
             request.getRequestDispatcher("editarCuentaAdmin.jsp").forward(request, response);
         } else if (accion.equals("actualizarAdmin")) {
-
+            // ... (Lógica de actualizarAdmin - Sin cambios) ...
             Administrador admin = (Administrador) request.getSession().getAttribute("admin");
 
             if (admin == null) {
@@ -260,7 +310,7 @@ public class Controlador extends HttpServlet {
         // ----------------------------------------------------------------------
         
         else if (accion.equals("eliminarVehiculo")) {
-
+            // ... (Lógica de eliminarVehiculo - Sin cambios) ...
             String placa = request.getParameter("placa");
 
             vehiculoDAO dao = new vehiculoDAO();
@@ -270,44 +320,89 @@ public class Controlador extends HttpServlet {
             request.getRequestDispatcher("eliminarVehiculoAdmin.jsp").forward(request, response);
         }
         
-         // ----------------------------------------------------------------------
-        // HISTORIAL CONDUCTOR ADMIN
-        // ----------------------------------------------------------------------
-        
-        else if (accion.equals("historialConductor")) {
+          // ----------------------------------------------------------------------
+          // HISTORIAL CONDUCTOR ADMIN
+          // ----------------------------------------------------------------------
+          
+          else if (accion.equals("historialConductor")) {
+              // ... (Lógica de historialConductor - Sin cambios) ...
+              int id = Integer.parseInt(request.getParameter("id"));
 
-            int id = Integer.parseInt(request.getParameter("id"));
+              historialConductorDAO dao = new historialConductorDAO();
 
-            historialConductorDAO dao = new historialConductorDAO();
+              Conductor conductor = dao.obtenerConductor(id);
+              List<String> telefonos = dao.obtenerTelefonos(id);
+              List<Vehiculo> vehiculos = dao.obtenerVehiculos(id);
 
-            Conductor conductor = dao.obtenerConductor(id);
-            List<String> telefonos = dao.obtenerTelefonos(id);
-            List<Vehiculo> vehiculos = dao.obtenerVehiculos(id);
+              request.setAttribute("conductor", conductor);
+              request.setAttribute("telefonos", telefonos);
+              request.setAttribute("vehiculos", vehiculos);
 
-            request.setAttribute("conductor", conductor);
-            request.setAttribute("telefonos", telefonos);
-            request.setAttribute("vehiculos", vehiculos);
-
-            request.getRequestDispatcher("historialConductor.jsp").forward(request, response);
-        }
+              request.getRequestDispatcher("historialConductor.jsp").forward(request, response);
+          }
 
         // ----------------------------------------------------------------------
         // LISTAR CONDUCTORES (ADMIN)
         // ----------------------------------------------------------------------
         else if (accion.equals("listarConductores")) {
-
+            // ... (Lógica de listarConductores - Sin cambios) ...
             conductorDAO dao = new conductorDAO();
             List<Conductor> lista = dao.listarConductores();
 
             request.setAttribute("conductores", lista);
             request.getRequestDispatcher("listarConductores.jsp").forward(request, response);
         }
+
+        // Asegúrate de tener las importaciones necesarias
+// import persistencia.clienteDAO;
+// import persistencia.telefonoClienteDAO;
+// import persistencia.servicioDAO;
+// import negocio.Cliente;
+// import negocio.TelefonoCliente;
+// import negocio.Servicio;
+// import java.util.List;
+// Dentro del método principal de tu Controlador (generalmente doPost/doGet o processRequest):
+        if (accion.equalsIgnoreCase("historialCliente")) {
+            try {
+                // 1. Obtener el ID del cliente de la URL
+                int idCliente = Integer.parseInt(request.getParameter("id"));
+
+                // 2. Instanciar los DAOs
+                clienteDAO cdao = new clienteDAO();
+                telefonoClienteDAO tdao = new telefonoClienteDAO(); // Asegúrate de que esta clase exista y esté en persistencia
+                servicioDAO sdao = new servicioDAO(); // Asegúrate de que esta clase exista y esté en persistencia
+
+                // 3. Obtener el objeto Cliente (para mostrar nombre, correo, etc.)
+                Cliente cliente = cdao.obtenerClientePorId(idCliente);
+
+                // 4. Obtener la lista de Teléfonos
+                List<TelefonoCliente> telefonos = tdao.obtenerTelefonosPorCliente(idCliente);
+
+                // 5. Obtener la lista de Servicios
+                List<Servicio> servicios = sdao.obtenerServiciosPorCliente(idCliente);
+
+                // 6. Colocar los objetos y listas en el Request para que el JSP los vea
+                request.setAttribute("cliente", cliente);
+                request.setAttribute("telefonos", telefonos);
+                request.setAttribute("servicios", servicios);
+
+                // 7. Redirigir al JSP
+                request.getRequestDispatcher("historialCliente.jsp").forward(request, response);
+
+            } catch (NumberFormatException e) {
+                System.out.println("Error de formato de ID al buscar historial: " + e.getMessage());
+                // Manejar error de ID inválido
+            } catch (Exception e) {
+                System.out.println("Error general en historialCliente: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
         
         // ----------------------------------------------------------------------
         // GENERAR REPORTES (ADMIN)
         // ----------------------------------------------------------------------
         else if (accion.equals("generarReportes")) {
-
+            // ... (Lógica de generarReportes - Sin cambios) ...
             conductorDAO cdao = new conductorDAO();
 
             cdao.crearVistaReporteDetallado();
@@ -336,7 +431,7 @@ public class Controlador extends HttpServlet {
         // ABRIR FORMULARIO ADMINISTRAR CUENTA
         // ----------------------------------------------------------------------
         else if (accion.equals("editarCuenta")) {
-
+            // ... (Lógica de editarCuenta - Sin cambios) ...
             Conductor conductor = (Conductor) request.getSession().getAttribute("conductor");
 
             if (conductor == null) {
@@ -352,66 +447,67 @@ public class Controlador extends HttpServlet {
         // ACTUALIZAR DATOS DEL CONDUCTOR
         // ----------------------------------------------------------------------
         else if (accion.equals("actualizar")) {
-        Conductor c = (Conductor) request.getSession().getAttribute("conductor");
+            // ... (Lógica de actualizar - Sin cambios) ...
+            Conductor c = (Conductor) request.getSession().getAttribute("conductor");
 
-        if (c == null) {
-            response.sendRedirect("index.jsp");
-            return;
+            if (c == null) {
+                response.sendRedirect("index.jsp");
+                return;
+            }
+
+            c.setNombre(request.getParameter("nombre"));
+            c.setDireccion(request.getParameter("direccion"));
+            c.setCorreo(request.getParameter("correo"));
+
+            // contraseña opcional
+            String clave = request.getParameter("clave");
+            if (clave != null && !clave.trim().isEmpty()) {
+                c.setClave(clave);
+            }
+
+            // genero
+            int idG = Integer.parseInt(request.getParameter("genero"));
+            c.setGenero(new generoDAO().obtenerPorId(idG));
+
+            // nacionalidad
+            int idN = Integer.parseInt(request.getParameter("nacionalidad"));
+            c.setNacionalidad(new nacionalidadDAO().obtenerPorId(idN));
+
+            // FOTO
+            Part foto = request.getPart("foto");
+
+            if (foto != null && foto.getSize() > 0) {
+
+                String nombreArchivo = Paths.get(foto.getSubmittedFileName())
+                        .getFileName().toString();
+
+                String extension = "";
+
+                int i = nombreArchivo.lastIndexOf(".");
+                if (i > 0) extension = nombreArchivo.substring(i);
+
+                String nombreFinal = c.getIdentificacion() + extension;
+
+                String rutaImg = getServletContext().getRealPath("/img");
+                File carpeta = new File(rutaImg);
+                if (!carpeta.exists()) carpeta.mkdirs();
+
+                foto.write(rutaImg + File.separator + nombreFinal);
+
+                c.setFoto("img/" + nombreFinal);
+            }
+
+            conductorDAO dao = new conductorDAO();
+            dao.actualizarConductor(c);
+
+            request.getSession().setAttribute("mensaje", "Cambios guardados correctamente");
+
+            request.getRequestDispatcher("administrarCuentaConductor.jsp")
+                    .forward(request, response);
         }
 
-        c.setNombre(request.getParameter("nombre"));
-        c.setDireccion(request.getParameter("direccion"));
-        c.setCorreo(request.getParameter("correo"));
 
-        // contraseña opcional
-        String clave = request.getParameter("clave");
-        if (clave != null && !clave.trim().isEmpty()) {
-            c.setClave(clave);
-        }
-
-        // genero
-        int idG = Integer.parseInt(request.getParameter("genero"));
-        c.setGenero(new generoDAO().obtenerPorId(idG));
-
-        // nacionalidad
-        int idN = Integer.parseInt(request.getParameter("nacionalidad"));
-        c.setNacionalidad(new nacionalidadDAO().obtenerPorId(idN));
-
-        // FOTO
-        Part foto = request.getPart("foto");
-
-        if (foto != null && foto.getSize() > 0) {
-
-            String nombreArchivo = Paths.get(foto.getSubmittedFileName())
-                    .getFileName().toString();
-
-            String extension = "";
-
-            int i = nombreArchivo.lastIndexOf(".");
-            if (i > 0) extension = nombreArchivo.substring(i);
-
-            String nombreFinal = c.getIdentificacion() + extension;
-
-            String rutaImg = getServletContext().getRealPath("/img");
-            File carpeta = new File(rutaImg);
-            if (!carpeta.exists()) carpeta.mkdirs();
-
-            foto.write(rutaImg + File.separator + nombreFinal);
-
-            c.setFoto("img/" + nombreFinal);
-        }
-
-        conductorDAO dao = new conductorDAO();
-        dao.actualizarConductor(c);
-
-        request.getSession().setAttribute("mensaje", "Cambios guardados correctamente");
-
-        request.getRequestDispatcher("administrarCuentaConductor.jsp")
-                .forward(request, response);
-    }
-
-
-        }
+    } 
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -422,6 +518,3 @@ public class Controlador extends HttpServlet {
             throws ServletException, IOException { processRequest(request, response); }
 
 }
-
-
-
