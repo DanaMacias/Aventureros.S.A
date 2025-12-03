@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package negocio;
-
+import java.util.List;
 /**
  *
  * @author VivoBook
@@ -13,6 +13,7 @@ public class Conductor extends Persona{
     private String foto;
     private Genero genero;
     private Nacionalidad nacionalidad;
+    private List<Vehiculo> vehiculos;
 
     public Conductor() {
     }
@@ -57,5 +58,12 @@ public class Conductor extends Persona{
         this.nacionalidad = nacionalidad;
     }
     
+    public List<Vehiculo> getVehiculos() {
+        return vehiculos;
+    }
+
+    public void setVehiculos(List<Vehiculo> vehiculos) {
+        this.vehiculos = vehiculos;
+    }
     
 }

@@ -302,7 +302,36 @@ public class Controlador extends HttpServlet {
             request.setAttribute("conductores", lista);
             request.getRequestDispatcher("listarConductores.jsp").forward(request, response);
         }
+        
+        // ----------------------------------------------------------------------
+        // GENERAR REPORTES (ADMIN)
+        // ----------------------------------------------------------------------
+        else if (accion.equals("generarReportes")) {
 
+            conductorDAO cdao = new conductorDAO();
+
+            cdao.crearVistaReporteDetallado();
+            
+            String tipoReporte = request.getParameter("tipoReporte");
+            List<Conductor> listaReporte = null;
+            
+            if (tipoReporte == null || tipoReporte.isEmpty()) {
+                request.getRequestDispatcher("reportes.jsp").forward(request, response);
+                return;
+            }
+
+            if (tipoReporte.equals("conductoresCompleto")) {
+
+                listaReporte = cdao.listarConductoresDetallado();
+
+                request.setAttribute("reporteTipo", "conductoresCompleto");
+
+            }
+
+            request.setAttribute("listaReporte", listaReporte);
+            request.getRequestDispatcher("reportes.jsp").forward(request, response);
+        }
+        
         // ----------------------------------------------------------------------
         // ABRIR FORMULARIO ADMINISTRAR CUENTA
         // ----------------------------------------------------------------------

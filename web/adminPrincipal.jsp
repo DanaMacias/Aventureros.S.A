@@ -22,8 +22,6 @@
         <title>Panel de Administrador</title>
     </head>
     <body>
-
-        <h1>Administrador</h1>
         <%@ include file="menuAdministrador.jsp" %>
         <p><strong>Identificación:</strong> ${admin.identificacion}</p>
 

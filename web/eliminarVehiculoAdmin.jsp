@@ -21,8 +21,6 @@
 </head>
 <body>
 
-<h2 class="text-center mt-3">Eliminar Vehículo</h2>
-
 <%@ include file="menuAdministrador.jsp" %>
 
 <div class="container mt-4">
