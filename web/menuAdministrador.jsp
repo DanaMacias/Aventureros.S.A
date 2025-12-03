@@ -27,14 +27,12 @@
                     <li class="nav-item">
                         <a class="nav-link" href="gestionarServicios.jsp">Gestionar servicios</a>
                     </li>
-
+                    
                     <li class="nav-item">
-                        <a class="nav-link" href="historialClienteAdmin.jsp">Historial del cliente</a>
-                    </li>
+                    <a class="nav-link" href="Controlador?accion=listarConductores">
+                        Gestionar conductores
+                    </a></li>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="historialConductorAdmin.jsp">Historial del conductor</a>
-                    </li>
 
                     <li class="nav-item">
                         <a class="nav-link" href="reportes.jsp">Generar reportes</a>

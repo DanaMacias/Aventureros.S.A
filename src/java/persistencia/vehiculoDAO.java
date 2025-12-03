@@ -76,4 +76,34 @@ public class vehiculoDAO {
 
         return false;
     }
+ 
+    public List<Vehiculo> listarVehiculosPorConductor(int idConductor) {
+        List<Vehiculo> lista = new ArrayList<>();
+        String sql = "SELECT * FROM vehiculo WHERE identificacion_conductor = ?";
+
+        Connection acceso = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            acceso = con.getConexion();
+            ps = acceso.prepareStatement(sql);
+            ps.setInt(1, idConductor);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Vehiculo v = new Vehiculo();
+                v.setPlaca(rs.getString("placa"));
+                v.setIdentificacion_conductor(rs.getInt("identificacion_conductor"));
+                lista.add(v);
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error listarVehiculosPorConductor: " + e.getMessage());
+        }
+
+        return lista;
+    }
+
 }
+

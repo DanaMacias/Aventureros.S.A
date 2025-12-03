@@ -1,6 +1,7 @@
 package controlador;
 
 import java.io.File;
+import java.util.List;
 import java.io.IOException;
 import java.nio.file.Paths;
 import javax.servlet.ServletException;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+import negocio.Vehiculo;
 import negocio.Administrador;
 import negocio.Cliente;
 import negocio.Conductor;
@@ -25,6 +27,7 @@ import persistencia.nacionalidadDAO;
 import persistencia.telefonoClienteDAO;
 import persistencia.telefonoConductorDAO;
 import persistencia.vehiculoDAO;
+import persistencia.historialConductorDAO;
 
 @WebServlet(name = "Controlador", urlPatterns = {"/Controlador"})
 @MultipartConfig
@@ -266,8 +269,39 @@ public class Controlador extends HttpServlet {
             request.setAttribute("eliminado", eliminado);
             request.getRequestDispatcher("eliminarVehiculoAdmin.jsp").forward(request, response);
         }
+        
+         // ----------------------------------------------------------------------
+        // HISTORIAL CONDUCTOR ADMIN
+        // ----------------------------------------------------------------------
+        
+        else if (accion.equals("historialConductor")) {
 
+            int id = Integer.parseInt(request.getParameter("id"));
 
+            historialConductorDAO dao = new historialConductorDAO();
+
+            Conductor conductor = dao.obtenerConductor(id);
+            List<String> telefonos = dao.obtenerTelefonos(id);
+            List<Vehiculo> vehiculos = dao.obtenerVehiculos(id);
+
+            request.setAttribute("conductor", conductor);
+            request.setAttribute("telefonos", telefonos);
+            request.setAttribute("vehiculos", vehiculos);
+
+            request.getRequestDispatcher("historialConductor.jsp").forward(request, response);
+        }
+
+        // ----------------------------------------------------------------------
+        // LISTAR CONDUCTORES (ADMIN)
+        // ----------------------------------------------------------------------
+        else if (accion.equals("listarConductores")) {
+
+            conductorDAO dao = new conductorDAO();
+            List<Conductor> lista = dao.listarConductores();
+
+            request.setAttribute("conductores", lista);
+            request.getRequestDispatcher("listarConductores.jsp").forward(request, response);
+        }
 
         // ----------------------------------------------------------------------
         // ABRIR FORMULARIO ADMINISTRAR CUENTA

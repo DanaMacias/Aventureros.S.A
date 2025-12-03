@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import negocio.Conductor;
 import negocio.Genero;
 import negocio.Nacionalidad;
+import java.util.ArrayList;
+import java.util.List;
 
 public class conductorDAO {
 
@@ -165,4 +167,69 @@ public class conductorDAO {
     return c;
 }
 
+    public List<Conductor> listarConductores() {
+        List<Conductor> lista = new ArrayList<>();
+
+        String sql = "SELECT * FROM conductor";
+        Connection acceso = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            acceso = con.getConexion();
+            ps = acceso.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Conductor c = new Conductor();
+
+                c.setIdentificacion(rs.getInt("identificacion"));
+                c.setNombre(rs.getString("nombre"));
+                c.setCorreo(rs.getString("correo"));
+                c.setDireccion(rs.getString("direccion"));
+                c.setClave(rs.getString("clave"));
+                c.setFoto(rs.getString("foto"));
+
+                // nacionalidad
+                Nacionalidad n = new Nacionalidad();
+                n.setId(rs.getInt("id_nacionalidad"));
+                c.setNacionalidad(n);
+
+                // género
+                Genero g = new Genero();
+                g.setId(rs.getInt("id_genero"));
+                c.setGenero(g);
+
+                lista.add(c);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("ERROR AL LISTAR CONDUCTORES: " + e.getMessage());
+
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (SQLException e) {
+            }
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
+            }
+            try {
+                if (acceso != null) {
+                    acceso.close();
+                }
+            } catch (SQLException e) {
+            }
+        }
+
+        return lista;
+    }
+
+
 }
+
